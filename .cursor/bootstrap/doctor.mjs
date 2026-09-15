@@ -76,7 +76,7 @@ export function classifyDoctor(facts) {
     facts.dockerDaemon ? "Docker daemon is reachable." : "Docker daemon is unreachable.",
     facts.dockerDaemon
       ? null
-      : "Start Docker or use the Docker-capable bootstrap-smoke CI lane.",
+      : "Start Docker, then run /verify-local on a Docker-capable host.",
   )
   add(
     "supabase-verification",

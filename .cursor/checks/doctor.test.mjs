@@ -71,7 +71,7 @@ test("scaffold-only initialization remains recoverable without Docker", () => {
     }),
   )
   assert.equal(byId(checks, "docker-daemon").status, "fail")
-  assert.match(byId(checks, "docker-daemon").remediation, /bootstrap-smoke CI/)
+  assert.match(byId(checks, "docker-daemon").remediation, /Docker-capable host/)
   assert.match(byId(checks, "supabase-verification").remediation, /verify-local/)
 })
 

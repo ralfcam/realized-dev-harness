@@ -227,7 +227,6 @@ function preflight(
     ".cursor",
     ".git",
     ".gitignore",
-    ".github",
     "LICENSE",
     "README.md",
     "docs",
@@ -401,7 +400,7 @@ function renderDocs(root, projectName) {
   visit(join(root, "docs"))
 }
 
-function installProfiles(root, options, config) {
+function installProfiles(root, options) {
   const settingsPath = join(root, ".cursor", "settings.json")
   const settings = JSON.parse(readFileSync(settingsPath, "utf8"))
   settings.plugins = {
@@ -413,16 +412,6 @@ function installProfiles(root, options, config) {
     cpSync(
       join(root, ".cursor", "profiles", "coderabbit", "coderabbit.yaml"),
       join(root, ".coderabbit.yaml"),
-    )
-    const workflow = join(root, ".github", "workflows", "coderabbit-main-gate.yml")
-    writeFileAtomic(
-      workflow,
-      readFileSync(
-        join(root, ".cursor", "profiles", "coderabbit", "coderabbit-main-gate.yml"),
-        "utf8",
-      )
-        .replaceAll("{{DEFAULT_BRANCH}}", config.git.defaultBranch)
-        .replaceAll("{{ACCUMULATOR_BRANCH}}", config.git.accumulatorBranch),
     )
   }
 }
@@ -521,7 +510,7 @@ export async function initialize(options, root = process.cwd(), dependencies = {
       ...buildHarnessConfig(options, false, manifest),
       initialized: false,
     }
-    installProfiles(root, options, pendingConfig)
+    installProfiles(root, options)
     renderDocs(root, options.projectName)
     writeJsonAtomic(join(root, ".cursor", "harness.json"), pendingConfig)
     await persist("configured")

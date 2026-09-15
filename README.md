@@ -14,7 +14,7 @@ the canonical work queue remain local under `docs/`.
 
 Bootstrap inputs are pinned in `.cursor/bootstrap/manifest.json`. Use
 `pnpm harness:upgrade -- --dry-run` before applying a bundled harness upgrade;
-version changes require the cross-platform and Docker-backed bootstrap
-workflows to pass.
+version changes require disposable scaffold evidence and complete verification
+on a Docker-capable host.
 
 See [the operator guide](.cursor/README.md) and [knowledge index](docs/index.md).

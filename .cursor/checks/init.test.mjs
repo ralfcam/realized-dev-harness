@@ -183,7 +183,7 @@ test("all integration profile combinations produce only selected artifacts", asy
       assert.equal(existsSync(join(root, ".coderabbit.yaml")), withCoderabbit)
       assert.equal(
         existsSync(join(root, ".github", "workflows", "coderabbit-main-gate.yml")),
-        withCoderabbit,
+        false,
       )
       assert.equal(
         Boolean(JSON.parse(readFileSync(join(root, ".cursor", "settings.json"))).plugins.linear),

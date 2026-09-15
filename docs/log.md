@@ -7,6 +7,5 @@
   matrices, and rollback-safe harness upgrades.
 * **Initialization**: Established the OKF v0.2 source-of-truth bundle.
 * **Local verification recovery**: Added read-only environment diagnostics, a
-  resumable fail-closed Supabase verification command, and a Docker-capable CI
-  bootstrap smoke lane. CodeRabbit recovery remains runtime-managed in the web
-  IDE.
+  resumable fail-closed Supabase verification command, and Docker-host recovery
+  guidance. CodeRabbit recovery remains runtime-managed in the web IDE.

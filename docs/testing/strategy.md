@@ -21,5 +21,5 @@ test count. Skips and zero-test runs never satisfy acceptance.
 
 Local Supabase evidence additionally requires a migration-and-seed reset,
 database lint, loopback Auth and REST health, and a migration fingerprint.
-Linux CI owns the Docker-backed lane; scaffold behavior runs on Linux, macOS,
-and Windows.
+Run the complete verification on a Docker-capable host; scaffold behavior is
+covered by the platform-independent harness tests.

@@ -35,7 +35,7 @@ tracked files or logs.
 | Diagnostic | Recovery |
 | --- | --- |
 | Docker CLI missing | Install Docker Desktop or Docker Engine. |
-| Docker daemon unreachable | Start Docker or use the repository's Docker-capable `bootstrap-smoke` CI workflow. |
+| Docker daemon unreachable | Start Docker, then run `pnpm verify:local` on a Docker-capable host. |
 | Supabase verification pending | Run `pnpm verify:local`; mocks and remote databases are not substitutes. |
 | CodeRabbit disabled for a web IDE task | Enable CodeRabbit from task actions, then rerun `coderabbit review --agent -t uncommitted`. |
 | CodeRabbit remains unavailable | Report the external runtime blocker; do not run login commands or inject API keys. |
