@@ -1,0 +1,46 @@
+---
+description: Use PowerShell syntax for Windows commands, examples, and runbooks
+alwaysApply: true
+---
+
+# PowerShell Commands (Windows)
+
+The default shell in this workspace is **PowerShell** (`pwsh`), not CMD. Write all
+command examples, runbooks, and shell invocations in PowerShell syntax.
+
+- **Prefer PowerShell cmdlets** over CMD builtins: `Get-ChildItem` (not `dir /b /s`),
+  `Remove-Item`, `Copy-Item`, `Test-Path`, `Select-String` (not `findstr`).
+- **Sequencing:** `;` runs commands unconditionally; `&&` and `||` are supported for
+  conditional chaining (PowerShell 7+) and are fine for external tools (`pnpm`, `npx`,
+  `git`, `node`).
+- **Per-command env var:** set it inline as `$env:NAME = 'value'; <command>` — do **not**
+  use CMD's `set NAME=value && <command>` (invalid in PowerShell) or Bash's
+  `NAME=value <command>`.
+- **Reference / persist env vars:** read with `$env:NAME` (not `%NAME%`); set for future
+  sessions with `setx NAME "value"` (takes effect in new shells only, not the current one).
+- **Paths:** use Windows backslash paths and quote any path containing spaces
+  (`"C:\Path With Spaces\file"`).
+- **Avoid Bash-isms** (`export`, `&&`-only assumptions for assignment, `$VAR`, backtick
+  line continuations from shell) unless explicitly requested.
+
+## Examples
+
+```powershell
+cd C:\Users\joser\PycharmProjects\restaurant-system
+pnpm install; pnpm dev
+```
+
+```powershell
+# Run a command with a one-off environment variable
+$env:RESTAURANT_INTEGRATION_STRICT = 'true'; pnpm test:integration tests/integration/foo.integ.test.ts
+```
+
+```powershell
+# Conditional chaining (PowerShell 7+)
+npx supabase start; npx supabase db reset --local
+```
+
+```powershell
+# Persist an env var for future sessions
+setx GITHUB_PERSONAL_ACCESS_TOKEN "your_token_here"
+```

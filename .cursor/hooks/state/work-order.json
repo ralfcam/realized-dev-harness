@@ -1,0 +1,30 @@
+{
+  "owningSpec": "docs/specs/dev-toolchain.md",
+  "expectedPaths": [
+    ".coderabbit.yaml",
+    ".cursor/checks/coderabbit-pr-gate.mjs",
+    ".cursor/checks/harness-lint.mjs",
+    ".cursor/checks/harness-lint.test.mjs",
+    ".cursor/hooks/lib/coderabbit-pr-policy.mjs",
+    ".cursor/hooks/lib/coderabbit-review-policy.mjs",
+    "docs/README.md",
+    "docs/dev-journal.md",
+    "docs/findings/archive.md",
+    "docs/findings/product-gaps.md",
+    "docs/findings/security.md",
+    "docs/findings/tech-debt.md",
+    "docs/findings/test-debt.md",
+    "docs/runbooks/coderabbit.md",
+    "docs/specs/dev-toolchain.md",
+    "docs/testing/Design-And-Patterns.md",
+    "docs/testing/Vitest-Unit-Guide.md",
+    "docs/verifier-reports/tdd/g-cr2_complete_mint_d26b357a.md",
+    "tests/unit/dev-toolchain/coderabbit-gcr2-empty-reviewed-files.test.ts",
+    "tests/unit/dev-toolchain/coderabbit-gcr3-mustfixes.test.ts",
+    "tests/unit/dev-toolchain/fixtures/remote-feature-into-main.json",
+    "tests/unit/dev-toolchain/fixtures/remote-main-into-main.json",
+    "tests/unit/dev-toolchain/fixtures/remote-main-into-staging.json",
+    "tests/unit/dev-toolchain/fixtures/remote-staging-into-staging.json"
+  ],
+  "base": "staging"
+}

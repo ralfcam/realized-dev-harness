@@ -1,0 +1,3 @@
+{"type":"review_context","base":"staging","reviewedFiles":["lib/example.ts"]}
+{"type":"finding","id":"cr-minor-1","severity":"minor","fileName":"lib/example.ts","comment":"missing check"}
+{"type":"complete","status":"complete","findings":1,"reviewedFiles":["lib/example.ts"]}

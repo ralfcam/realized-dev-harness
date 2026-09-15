@@ -1,0 +1,21 @@
+{
+  "owningSpec": "docs/specs/dev-toolchain.md",
+  "expectedPaths": [
+    ".cursor/checks/coderabbit-pr-gate.mjs",
+    ".cursor/checks/harness-lint.mjs",
+    ".cursor/commands/ready-merge-release.md",
+    ".cursor/hooks/lib/coderabbit-pr-policy.mjs",
+    "docs/README.md",
+    "docs/dev-journal.md",
+    "docs/findings/product-gaps.md",
+    "docs/findings/tech-debt.md",
+    "docs/findings/test-debt.md",
+    "docs/runbooks/coderabbit.md",
+    "docs/specs/dev-toolchain.md",
+    "docs/testing/Design-And-Patterns.md",
+    "docs/testing/Vitest-Unit-Guide.md",
+    "docs/verifier-reports/tdd/g-cr3_commit_must-fixes_cc22b981.md",
+    "tests/unit/dev-toolchain/coderabbit-gcr3-mustfixes.test.ts",
+    "tests/unit/dev-toolchain/fixtures/remote-main-into-staging.json"
+  ]
+}

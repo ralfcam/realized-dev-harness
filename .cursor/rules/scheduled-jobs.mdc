@@ -1,0 +1,46 @@
+---
+description: Scheduled jobs default to Supabase Edge Functions + pg_cron, not Vercel Cron
+globs: supabase/functions/**,supabase/migrations/**,docs/specs/**,app/api/cron/**,vercel.json
+alwaysApply: false
+---
+
+# Scheduled jobs: Supabase first
+
+When a spec or implementation needs a **timer** (cron, periodic invoke,
+“run this every hour”), consider **Supabase Edge Function + `pg_cron`**
+(`pg_net` HTTP invoke) **first**. Do not reach for `vercel.json` `crons`
+as the default.
+
+Shipped precedent: `review-email` (PV-15) — Hobby rejected hourly Vercel
+Cron and preview deploys never tick. The worker stayed
+`GET /api/cron/review-email`; the schedule moved to Supabase.
+
+## Default shape
+
+1. **Worker** — keep the job in a Bearer-gated Next route (or the Edge
+   Function itself) so unit tests can invoke it without Deno.
+2. **Edge Function** — `supabase/functions/<name>/` authenticates with a
+   secret (`CRON_SECRET`), not the public anon key. `verify_jwt = false`
+   in `config.toml` because `pg_cron` sends Vault Bearer, not a user JWT.
+3. **Schedule** — idempotent `cron.schedule` in
+   `00000000000000_baseline.sql`, guarded if `pg_cron` / `pg_net` are
+   missing (slim Cloud Agent Postgres). Hourly `0 * * * *` is fine here.
+4. **Hosted secrets** — function `CRON_SECRET` (+ app origin if it
+   forwards); Vault `project_url` + `cron_secret`. Runbook:
+   [docs/runbooks/deploy.md](docs/runbooks/deploy.md).
+
+## Do not
+
+- Do not add `vercel.json` `crons` unless a spec **explicitly** chooses
+  Vercel after this default was considered. Hobby allows **daily** crons
+  only; more frequent expressions fail the git-linked deploy.
+- Do not treat a public publishable/`anon` `apikey` as cron auth.
+- Do not invent a second mailer/job implementation in Deno when a Next
+  worker already exists — forward to that route.
+
+## Pin
+
+No `vercel.json` `crons`. Assert function source, `[functions.<name>]
+verify_jwt = false`, and baseline job name + cron expression +
+`/functions/v1/<name>`. Recipe:
+[docs/testing/Design-And-Patterns.md](docs/testing/Design-And-Patterns.md).

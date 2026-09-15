@@ -1,0 +1,2 @@
+{"type":"review_context","base":"staging","reviewedFiles":["app/other.ts"]}
+{"type":"complete","status":"complete","findings":0,"reviewedFiles":["lib/example.ts"]}

@@ -1,0 +1,2 @@
+{"type":"review_context","base":"staging","reviewedFiles":["lib/example.ts"]}
+{"type":"finding","id":"cr-major-1","severity":"major","fileName":"lib/example.ts","comment":"logic bug"}

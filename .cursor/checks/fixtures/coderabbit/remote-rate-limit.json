@@ -1,0 +1,17 @@
+{
+  "isDraft": false,
+  "headSha": "abc123",
+  "pull": { "number": 12, "isDraft": false, "base": "main", "head": "staging", "headSha": "abc123" },
+  "reviews": [],
+  "threads": [],
+  "issueComments": [],
+  "reviewComments": [],
+  "checkRuns": [
+    {
+      "name": "Review rate limited",
+      "conclusion": "success",
+      "output": { "title": "Review rate limited", "summary": "quota" },
+      "app": { "id": 347564, "slug": "coderabbitai" }
+    }
+  ]
+}

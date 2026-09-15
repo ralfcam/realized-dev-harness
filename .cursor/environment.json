@@ -1,0 +1,4 @@
+{
+  "name": "restaurant-system",
+  "install": "corepack enable && corepack prepare --activate && pnpm install --frozen-lockfile && sh .cursor/cloud-install-coderabbit.sh"
+}

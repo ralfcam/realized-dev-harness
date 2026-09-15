@@ -1,0 +1,23 @@
+{
+  "isDraft": false,
+  "headSha": "abc123",
+  "pull": {
+    "number": 12,
+    "isDraft": false,
+    "base": "staging",
+    "head": "sdd/RES-1",
+    "headSha": "abc123"
+  },
+  "reviews": [
+    {
+      "user": { "login": "coderabbitai[bot]" },
+      "state": "APPROVED",
+      "commit_id": "abc123",
+      "body": "LGTM"
+    }
+  ],
+  "threads": [],
+  "issueComments": [],
+  "reviewComments": [],
+  "checkRuns": []
+}

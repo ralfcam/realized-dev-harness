@@ -1,0 +1,82 @@
+---
+description: Iron law for completion claims — "tests pass" / "fixed" / "done" / a commit or PR-prep step requires fresh command evidence run THIS turn, not a remembered or subagent-asserted result. Referenced by /commit, /sdd-to-tdd, and the tdd-* agents — read this instead of restating it.
+alwaysApply: false
+---
+
+# Verification before completion
+
+## The iron law
+
+**No completion claim without fresh command evidence produced in this turn.**
+"Tests pass," "it's fixed," "done," a commit message, or a PR-prep step are all
+completion claims. Each one requires you to have actually run the relevant
+command (test suite, typecheck, lint, build) in the current turn and read its
+real output — not a memory of an earlier run, not an assumption from reading
+the diff, and not a subagent's self-report taken at face value.
+
+## Skipped / `0 tests` is not green
+
+A suite that skipped or collected `0 tests` proves nothing about the code —
+see [test-execution-integrity.mdc](.cursor/rules/test-execution-integrity.mdc) for the full
+`describe.skipIf(!authEnvReady)` mechanics and the strict run command. This
+rule generalizes that doctrine beyond the TDD loop: **any** command whose
+output shows a skip, an empty collection, or a non-zero exit disqualifies the
+completion claim it was meant to support, in `/commit`'s gate re-runs and
+everywhere else.
+
+## A subagent's "success" report is a claim, not evidence
+
+When a delegated phase (`tdd-red`/`tdd-green`/`tdd-refactor`, or any other
+subagent) reports GREEN, PASS, or "done," that report is the subagent's claim
+about its own work — it is not, by itself, the orchestrator's evidence. Before
+advancing past that phase or citing it as done:
+
+- **Re-check the diff.** Confirm the files the subagent claims to have changed
+  actually changed the way it says.
+- **Re-run (or confirm the run of) the command it cites.** Don't advance a
+  phase on the strength of a pasted "Result: GREEN ✓" line alone if the actual
+  command output isn't visible in the same turn.
+
+This is not distrust of the subagent's competence — it is refusing to let a
+completion claim travel further than the evidence that backs it.
+
+## Verify the world, not the self-report
+
+An assertion about the workspace must re-run the command or re-read the file
+from disk. A keyword probe on the agent's own previous output lets a cheating
+(or merely stale) agent pass. When the claim is that a file was not changed,
+assert the untouched bytes are identical to the prior read — not that the
+transcript lacks an edit mention.
+
+## A guard is trusted only after it has blocked
+
+A hook or checker is only trusted once the regression it claims to block has
+been introduced, observed failing that guard, and reverted. An assertion that
+passes against a guard that never blocked anything proves nothing.
+
+## PowerShell examples
+
+```powershell
+# Re-verify a unit suite before citing it as green
+pnpm test:unit tests/unit/lib/admin/apply-admin-job-board-filters.test.ts
+
+# Re-verify an integration suite (fail-closed: a skip or down DB must fail hard)
+pnpm test:integration tests/integration/jobs/accept-offer.integ.test.ts
+
+# Re-verify types and lint before a commit/PR-prep completion claim
+pnpm typecheck
+pnpm lint
+```
+
+## Where this applies
+
+- [`commit.md`](.cursor/commands/commit.md) — before re-running the gates
+  (§2), the completion claim about to be issued (PASS) needs this turn's
+  fresh command output, not the run's remembered report.
+- [`sdd-to-tdd.md`](.cursor/commands/sdd-to-tdd.md) — do not mark a phase
+  done on a subagent's assertion alone; the orchestrator's own phase-exit
+  check is what actually gates advancing to the next Task call.
+- [`tdd-red.md`](.cursor/agents/tdd-red.md) / [`tdd-green.md`](.cursor/agents/tdd-green.md) /
+  [`tdd-refactor.md`](.cursor/agents/tdd-refactor.md) — each phase's own
+  report is expected to cite the exact command it ran and the exact result
+  observed, not a paraphrase.

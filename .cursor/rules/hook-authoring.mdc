@@ -1,0 +1,87 @@
+---
+description: Observed Cursor hook payload shapes, the spawn-level liveness standard, probe safety, and armed-window escape rules. Referenced by the four preToolUse / beforeMCPExecution guards.
+alwaysApply: false
+---
+
+# Hook authoring
+
+Guards fail when they match a guessed payload and never observe a live
+denial. Write matchers against the shapes below, then prove the hook with a
+spawn-level test and one live block. See
+[`.cursor/hooks/linear-spawn-guard.mjs`](.cursor/hooks/linear-spawn-guard.mjs),
+[`.cursor/hooks/tdd-delegation-guard.mjs`](.cursor/hooks/tdd-delegation-guard.mjs),
+and [`.cursor/hooks/git-stage-guard.mjs`](.cursor/hooks/git-stage-guard.mjs).
+
+## Observed payload shapes
+
+`preToolUse` stdin is a JSON object with `tool_name`, `tool_input` (object),
+`hook_event_name`, `cwd`, plus session metadata. `tool_name` is the Cursor
+tool (`Shell`, `Write`, `Task`, …), not an MCP tool.
+
+`beforeMCPExecution` stdin is a JSON object where `tool_name` is the MCP
+tool (`get_issue`, `get_project`, …), `tool_input` is a **JSON string**, and
+`mcp_server_name` (also seen as `command` or `url`) is the server key
+(`plugin-linear-linear`, `plugin-vercel-vercel`, …).
+
+`StrReplace` arrives as `tool_name: "Write"` with the target at
+`tool_input.path`. A matcher on `"StrReplace"` never fires.
+
+MCP calls never arrive as `preToolUse` `CallMcpTool`. A matcher on that
+name never fires. Shared parsing lives in
+[`extractMcpCall`](.cursor/hooks/lib/mcp-payload.mjs) — do not
+re-guess the shape in a new hook.
+
+`readStdinJson` must strip a leading BOM. Cursor prefixes hook stdin with
+one on Windows; `JSON.parse` rejects it.
+
+## Liveness standard
+
+A detector unit test plus a [`hooks.json`](.cursor/hooks.json) wiring
+assertion are not proof. A guard is not done until it has:
+
+1. a spawn-level test that feeds the **real** payload shape (including the
+   BOM) through the hook script, and
+2. one observed live denial of the condition it claims to block.
+
+Follow the restore pattern in
+[`.cursor/checks/tdd-guard-policy.test.mjs`](.cursor/checks/tdd-guard-policy.test.mjs):
+capture the state file once at import, restore in a single `after()`, run
+the spawn block at `{ concurrency: 1 }`. A per-test capture can leak an
+armed state.
+
+## Probe safety
+
+Never install an unconditional deny in a hook without a matcher. A
+failClosed hook that denies every tool blocks the revert that would remove
+it. Trigger the guard's real condition instead (a scratch `Write` under a
+protected prefix, a non-whitelisted `Shell` command) and prefer probes that
+log without denying.
+
+## Armed-window safety
+
+An armed guard must never deny its own disarm. Every armed window needs an
+escape that does not route through the guarded tool — for the TDD guard,
+`Write` can set
+[`.cursor/hooks/state/tdd-guard.json`](.cursor/hooks/state/tdd-guard.json)
+to `{"armed": false}` without going through `Shell`.
+
+## beforeMCPExecution does not hot-reload mid-session
+
+Observed while adding `linear-comment-size-guard.mjs`: a newly-added
+`preToolUse` entry fired correctly on the very next matching call in the same
+session (proven by `task-delegation-guard.mjs` denying a live Task
+immediately after being wired into [`hooks.json`](.cursor/hooks.json)), but a
+newly-added `beforeMCPExecution` entry did not fire on five separate live
+`save_comment` calls in that same session — including after reordering the
+array and waiting — despite an already-registered `beforeMCPExecution` hook
+(`linear-spawn-guard.mjs`) firing correctly throughout. The detector and
+wiring were independently confirmed correct by a spawn-level test feeding
+the real payload shape.
+
+Conclusion: `beforeMCPExecution` hook registrations appear to load once per
+session and do not pick up new `hooks.json` entries until the window is
+reloaded, even though `preToolUse` does. Do not conclude a
+`beforeMCPExecution` guard is broken from a same-session live-fire failure
+alone — the spawn-level test is authoritative for logic; the live denial for
+a *new* `beforeMCPExecution` hook needs a reload of the Cursor window (or a
+fresh session) before it can be observed.

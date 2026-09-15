@@ -1,0 +1,46 @@
+{
+  "planSlug": "reservation-code-uniqueness_c4d50986",
+  "mode": "FIX",
+  "linearIssue": null,
+  "armedAt": "2026-09-11",
+  "disarmedAt": "2026-09-11",
+  "criterion": {
+    "id": "CONF-CODE-UNIQUE",
+    "specClause": "docs/specs/booking-rules.md AC-4 CONF-CODE-UNIQUE",
+    "priority": "P0",
+    "rationale": "Confirmation identity is a data-integrity invariant; guest INSERT can set conf_code, so uniqueness must be database-enforced.",
+    "testFile": "tests/integration/reservations/confirmation-code-uniqueness.integ.test.ts",
+    "testName": "rejects a second guest insert of the same conf_code with SQLSTATE 23505"
+  },
+  "phases": {
+    "spec-contract": {
+      "status": "complete",
+      "findingsRevision": "seeded in-scope security finding from docs/findings/security.md"
+    },
+    "red": {
+      "status": "complete",
+      "expectedFailure": "second insert of the same TVL-#### succeeds; baseline lacks CREATE UNIQUE INDEX IF NOT EXISTS reservations_conf_code_uidx",
+      "actualFailure": "expected null not to be null at expect(secondError).not.toBeNull() — second guest INSERT of TVL-9917 succeeded; Tests 1 failed (1), 0 skipped"
+    },
+    "green": {
+      "status": "complete",
+      "implementation": "CREATE UNIQUE INDEX IF NOT EXISTS reservations_conf_code_uidx ON public.reservations (conf_code) in 00000000000000_baseline.sql immediately after CREATE TABLE IF NOT EXISTS reservations",
+      "evidence": "npx supabase db reset --local; fail-closed uniqueness integ: Tests 1 passed (1), 0 skipped; typecheck pass"
+    },
+    "refactor": {
+      "status": "complete",
+      "checks": "db lint clean; uniqueness 1 passed; isolation unit 2 passed; unit 307 passed; integration 22 passed 0 skipped; lint 0 warnings; typecheck pass; this-run prettier clean"
+    },
+    "closeout": {
+      "status": "complete",
+      "docs": "Reservation-Flow, Auth-And-RLS, Vitest-Integration-Guide, Design-And-Patterns, README, dev-journal",
+      "findings": "UNIQUE archived resolved in-run; 23505 retry left on test-debt.md (below floor); hostile lookup untouched"
+    }
+  },
+  "reviews": {
+    "acceptance": "complete",
+    "productionCode": "complete",
+    "testQuality": "complete",
+    "combinedTestingVerification": "final gate after close-out: db reset, db lint, uniqueness in full integration 22/22 0 skipped, unit 307/307, lint 0 warnings, typecheck pass, this-run prettier clean"
+  }
+}

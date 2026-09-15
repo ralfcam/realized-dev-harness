@@ -1,0 +1,16 @@
+{
+  "isDraft": false,
+  "headSha": "abc123",
+  "pull": { "number": 12, "isDraft": false, "base": "main", "head": "staging", "headSha": "abc123" },
+  "reviews": [],
+  "threads": [],
+  "issueComments": [],
+  "reviewComments": [],
+  "checkRuns": [
+    {
+      "name": "CodeRabbit",
+      "conclusion": "neutral",
+      "output": { "title": "Billing confirmation required", "summary": "usage credits" }
+    }
+  ]
+}

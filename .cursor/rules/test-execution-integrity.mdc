@@ -1,0 +1,52 @@
+---
+description: Canonical "skipped suite ≠ green" doctrine for this repo's TDD loop — describe.skipIf(!authEnvReady) mechanics, fail-closed integration runs, the skip-preflight procedure, and the shared BLOCKED (infra) report shape. Referenced by tdd-red, tdd-green, tdd-refactor, /commit, and /sdd-to-tdd — read this instead of restating it.
+alwaysApply: false
+---
+
+# Test execution integrity: a skipped suite is never a pass
+
+Restaurant integration suites under `tests/integration/**` wrap in
+`describe.skipIf(!authEnvReady)` (see `tests/integration/helpers/env.ts`).
+When local Supabase env is missing, the suite **skips and reports green**.
+That is not a pass.
+
+## Why suites silently skip
+
+`authEnvReady` requires the public Supabase URL/anon key plus
+`SUPABASE_SERVICE_ROLE_KEY`. Absent keys → skip, 0 failures. Connection
+errors (`ECONNREFUSED`, `ENOTFOUND`) MUST fail the run when
+`RESTAURANT_INTEGRATION_STRICT=true` — never convert an unreachable
+Postgres into a skip.
+
+## The integration command (always fail-closed)
+
+```powershell
+$env:RESTAURANT_INTEGRATION_STRICT = 'true'; pnpm test:integration <path>
+```
+
+A skipped `describe.skipIf(!authEnvReady)` suite is never green.
+
+## Preflight: confirm the target actually executed
+
+A clean-looking result is not enough — check the reporter summary:
+- PowerShell: `pnpm test:unit <path> 2>&1 | Select-String -Pattern "skipped|passed|failed"`.
+- The target must appear in the **failed** count (Red) or **passed** count
+  (Green/Refactor) — not `skipped`, and not `0 tests collected`.
+- If it skipped or collected 0 tests, you are **infra-blocked**.
+
+## Shared BLOCKED (infra) report shape
+
+```
+## <Red|Green|Refactor> — BLOCKED (infra)
+<phase-specific line>
+Command: <the exact command run>
+Observed: <skipped count / "0 tests collected">
+Remedy: <e.g. `npx supabase start; npx supabase db reset --local`, then re-run>
+Note: returning to orchestrator — a skipped suite cannot validate this criterion.
+```
+
+## The doctrine
+
+**A skipped suite is never a RED, never a GREEN, never a clean
+re-verification — it is BLOCKED.** This applies to the phase agents,
+`/commit` re-running the gates, and `/sdd-to-tdd` orchestrating the loop.

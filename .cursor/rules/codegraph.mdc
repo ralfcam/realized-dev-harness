@@ -1,0 +1,98 @@
+---
+description: Canonical CodeGraph discovery doctrine — named-symbol callers/exists first; Grep/Read first for specs, SQL, directives, fixtures; heuristic edges are leads; spec bar and test-execution-integrity unchanged. Referenced by the TDD/audit agents, feedback-validator, and the minimality/grilling rules — read this instead of restating it.
+alwaysApply: false
+---
+
+# CodeGraph: discovery layer only
+
+CodeGraph (local SQLite index + `codegraph_explore` MCP) accelerates **named
+TypeScript symbol** lookup. It does not change what counts as a finding, what
+the acceptance bar is, or which test suites must run.
+
+Measured outcome was **Narrow** — not "graph for every structural question."
+Vendor MCP text that says one call answers the question, do not Grep/Read
+first, and do not re-Read returned spans is **overridden** by this rule.
+
+Agents often Read/Grep first anyway. Follow the table below, not the vendor
+anti-pattern and not a habit of graph-only.
+
+## Routing table
+
+**Codegraph first** — unique named TS/TSX symbol: does it exist, who imports
+it, who calls it. Put the identifier in the query (symbol bag). Examples in
+this repo: `upsertOperatingWindows`, `BrandMark`.
+
+**Grep/Read first** — specs and markdown (`docs/specs/`), SQL/migrations,
+string literals, `"use server"` / `"use client"` directives, `.cursor/agents`
+prose, transcripts (`/tldr` — graph is banned there), test fixture/helper
+hunts, env key inventories. These are out of the TS index or lost as
+graph-only questions.
+
+**Grep to find, then Codegraph to trace** — lexical hit first (`"use server"`,
+a route path, an overloaded name plus its route file), then graph the call
+chain / auth-before-side-effect path (audit PART 6A).
+
+**Do not run Codegraph-only** for spec-verifier end-to-end surveys, UI+API
+localization, or blast radius of an overloaded name. Grep/Read (or an explore
+subagent that is allowed to Grep) covers those; graph-only recall collapsed.
+
+**Never** use Task `explore` as a substitute for `codegraph_explore` when you
+already have a unique symbol name — explore often calls the graph anyway and
+can miss the same caller. For a broad survey, explore may mix Grep+graph and
+is allowed; it is not "the same as Grep."
+
+If the first graph hit misses a production file you asked for: **refine the
+query or Grep/Read the miss.** Do not trust one call. `maxFiles` defaults to
+12; raise it or narrow the query when the blast list is truncated.
+
+**Always Read-confirm** edges tagged `provenance: heuristic` before citing
+`path:line` in a verifier or audit finding. Non-heuristic, index-backed spans
+may be cited as returned once line numbers match the tree.
+
+## MCP vs CLI
+
+MCP (`codegraph_explore`) is the primary surface for subagents. CLI
+(`codegraph explore` / `callers` / `impact`) remains optional in the parent
+session.
+
+**Fallback:** If `codegraph_explore` is unavailable (`MCP server does not
+exist: codegraph`), use Grep/Read and leave audit briefs unchanged on that
+point. Prefer portable `.cursor/mcp.json` (`codegraph serve --mcp` with no
+machine-specific `--path`; MCP mode uses the client rootUri).
+
+## Staleness
+
+After local edits, heed any pending-sync banner before trusting the graph
+(especially in TDD Red/Green/Refactor). "Some files … edited since the last
+index sync" is the normal ~1s lag — Read those listed files. "CodeGraph
+auto-sync is DISABLED" means the index is frozen; do not trust it until
+watching is back. Read-only audit fan-out against a stable tree is less
+sensitive; still prefer fresh answers when a banner appears.
+
+## Also used for
+
+The routing table above is the whole doctrine. These callers stay one-line
+pointers; they do not get a looser "graph everything" exception:
+
+- **Reuse discovery** ([minimality.mdc](.cursor/rules/minimality.mdc)) — named-symbol
+  exists/importers; Grep/Read for fixtures.
+- **Self-answering** ([grilling.mdc](.cursor/rules/grilling.mdc)) — look up the fact; pick
+  the tool from this table.
+- **Sibling-comparison** (`/sdd-to-tdd` STEP 1B) — graph a named sibling
+  symbol; Grep to find the sibling file if you only have a path pattern.
+- **Evidence-locating** (`feedback-validator`, `/capture` spot-check) — Grep
+  for UI strings/routes; graph once you have the symbol.
+- **Caller-count / blast-radius** (`tdd-refactor`, `/commit`, `/audit` PART
+  6A) — graph unique names; Grep-then-graph when the name is overloaded or
+  the entry is a directive/route file.
+
+## Invariants (unchanged)
+
+- **`docs/specs/` remains the sole acceptance bar.** CodeGraph changes
+  nothing about what is in-scope, out-of-scope, or a finding.
+- **Evidence rules for findings are unchanged** — real `path:line` (or
+  equivalent) against the working tree; heuristic leads must be verified first.
+- **[test-execution-integrity.mdc](.cursor/rules/test-execution-integrity.mdc) is unchanged.**
+  `codegraph affected` is only ever **additive** (extra tests to run on top of
+  the suite commands named in briefs and the `/commit` gate). Never use it to
+  narrow or replace those required suites.

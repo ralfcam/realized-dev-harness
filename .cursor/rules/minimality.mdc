@@ -1,0 +1,91 @@
+---
+description: Minimality ladder for implementation shape — climb YAGNI → reuse → stdlib → native → installed dep → one line → minimum before writing new code, with explicit non-negotiable Syntex carve-outs (never weakens tests/AC/security/a11y). Referenced by tdd-green, tdd-refactor, and /commit.
+alwaysApply: true
+---
+
+# Minimality: climb the ladder before you write
+
+## Read/trace first, then climb
+
+Before writing anything, read the failing test (or the touched flow) and trace
+what already exists in the surrounding code. Most "new code" is unnecessary
+once you've actually looked — the ladder below only works if you climb it in
+order, starting from the top. For a named TS/TSX symbol ("does `foo` already
+exist", "who calls `foo`"), use `codegraph_explore` per
+[.cursor/rules/codegraph.mdc](.cursor/rules/codegraph.mdc). For fixtures,
+specs, SQL, directives, or string literals, Grep/Read first — then graph
+only to trace a name you already have.
+
+## The 7-rung ladder
+
+1. **YAGNI** — do you need this at all? A requirement that isn't in the test/
+   criterion yet doesn't need code yet.
+2. **Reuse in-repo** — is there already a function, helper, fixture, or
+   component in this codebase that does this? Named-symbol exists/importers
+   go to `codegraph_explore`; fixture and helper hunts go to Grep/Read first
+   (per [.cursor/rules/codegraph.mdc](.cursor/rules/codegraph.mdc)). Do not
+   guess from a partial result either way.
+3. **Standard library** — does the language/runtime already provide this
+   without adding anything?
+4. **Native platform feature** — does the framework (Next.js, React, Postgres)
+   already provide this behavior natively?
+5. **Already-installed dependency** — does a package already in
+   `package.json` provide this, even if you haven't used that part of its API
+   yet?
+6. **One line** — if you must write new code, can it be one clear line instead
+   of a new abstraction?
+7. **Minimum new surface** — only once 1–6 are exhausted, write the smallest
+   new function/type/module that satisfies the requirement — no speculative
+   generality, no configuration for a case that doesn't exist yet.
+
+A new dependency, a new abstraction layer, or scaffolding "for later" all sit
+below rung 5 or 7 — they need a stated reason, not a default.
+
+## Root-cause fixes, not patches
+
+When fixing a bug, prefer the fix that removes the actual defect over one that
+special-cases around it. A patch that adds a branch to avoid a wrong value is
+usually rung 6 masquerading as rung 7 — check whether the ladder's earlier
+rungs (reuse, native feature) would have prevented the bug's class entirely.
+
+## No unrequested abstractions, deps, or scaffolding-for-later
+
+Do not introduce a factory/wrapper/interface with exactly one caller "in case
+it's needed again," a new dependency where an installed one already covers
+the case, or scaffolding sized for a future criterion that hasn't been
+written yet. Build for the criterion in front of you.
+
+## Syntex carve-outs (non-negotiable)
+
+These override the ladder — minimality never trades away correctness or the
+project's actual bar:
+
+- **Never weaken, skip, or YAGNI away a test** required by an acceptance
+  criterion or by [test-execution-integrity.mdc](.cursor/rules/test-execution-integrity.mdc).
+  Vitest/Playwright stay the bar; "we could skip this test to keep things
+  minimal" is never a valid application of this rule.
+- **`docs/specs/**` wins.** Do not challenge or shrink an acceptance
+  criterion in the name of minimality — question only the *implementation
+  shape*, never the contract. A spec-vs-code disagreement is resolved through
+  `/sdd-to-tdd`, not by trimming scope here.
+- **Never cut trust-boundary validation, security, a11y, or data-loss error
+  handling** to save a line or a dependency. These are not "extra" surface —
+  they are part of the requirement even when the test doesn't spell out
+  every case.
+- **Terse code ("≤3 lines when possible") does not apply to orchestrators or
+  structured reports.** `/sdd-to-tdd`, `/audit`, `/triage`, `/capture`,
+  `/commit`, and the phase agents' report shapes are deliberately structured
+  and verbose where that structure carries information — minimality governs
+  *implementation* code, not command/agent prose or report formats.
+- Aligns with [pre-production-status.mdc](.cursor/rules/pre-production-status.mdc): prefer
+  one clean implementation path over migration scaffolding (flags, dual
+  paths, deprecation windows) — there are no live users to protect through a
+  transition yet.
+
+## Marking a deliberate ceiling
+
+When you consciously stop climbing the ladder short of the minimum (e.g. you
+chose reuse over a genuinely-clearer one-liner for consistency with a sibling
+file), a brief `// minimality: <why>` or `# minimality: <why>` comment is
+enough to make the trade-off legible to the next reader — this is optional,
+not a required convention, and is not a harvesting/audit mechanism on its own.

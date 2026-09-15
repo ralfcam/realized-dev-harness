@@ -1,0 +1,16 @@
+{
+  "isDraft": false,
+  "headSha": "abc123",
+  "pull": { "number": 12, "isDraft": false, "base": "main", "head": "staging", "headSha": "abc123" },
+  "reviews": [
+    {
+      "user": { "login": "coderabbitai[bot]" },
+      "state": "APPROVED",
+      "commit_id": "oldsha"
+    }
+  ],
+  "threads": [],
+  "issueComments": [],
+  "reviewComments": [],
+  "checkRuns": []
+}

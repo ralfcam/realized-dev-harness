@@ -1,0 +1,90 @@
+[
+  {
+    "name": "project issues-view URL with layout and query",
+    "command": "triage",
+    "input": "https://linear.app/realized/project/v-1-2-a1b2c3/issues?layout=list&pane=insights",
+    "expectedProjectSlug": "v-1-2-a1b2c3",
+    "expectedIssueIds": []
+  },
+  {
+    "name": "multiline Markdown issue list preserves ordered first occurrences",
+    "command": "dispatch",
+    "input": "- [RES-42](https://linear.app/realized/issue/RES-42)\n- RES-7\n- [duplicate](https://linear.app/realized/issue/RES-42)",
+    "expectedIssueIds": ["RES-42", "RES-7"]
+  },
+  {
+    "name": "duplicates malformed and mixed-team entries fail closed",
+    "command": "triage",
+    "input": "RES-8\nRES-8\nOPS-9\nRES-nope\nhttps://linear.app/realized/issue/RES-11",
+    "expectedIssueIds": ["RES-8", "RES-11"],
+    "expectedRejected": ["OPS-9", "RES-nope"]
+  },
+  {
+    "name": "project plus list is an intersection boundary",
+    "command": "dispatch",
+    "input": "V-1.2\n- RES-21\n- RES-22",
+    "expectedProjectName": "V-1.2",
+    "expectedIssueIds": ["RES-21", "RES-22"],
+    "expectedBehavior": "only listed issues compatible with the pinned project"
+  },
+  {
+    "name": "dispatch explicit list receives full portfolio outcomes",
+    "command": "dispatch",
+    "input": "RES-1\nRES-2\nRES-3\nRES-4\nRES-5",
+    "expectedIssueIds": ["RES-1", "RES-2", "RES-3", "RES-4", "RES-5"],
+    "expectedPortfolioOutcomeIds": [
+      "RES-1",
+      "RES-2",
+      "RES-3",
+      "RES-4",
+      "RES-5"
+    ],
+    "expectedMetadataScopeIds": ["RES-1", "RES-2", "RES-3", "RES-4", "RES-5"],
+    "existingActiveCount": 8,
+    "eligibleReadyIds": ["RES-1", "RES-2", "RES-3", "RES-4", "RES-5"],
+    "expectedActivationSlots": 2,
+    "expectedActivationIds": ["RES-1", "RES-2"],
+    "expectedNonWaveIds": ["RES-3", "RES-4", "RES-5"],
+    "expectedNonWaveState": "Backlog",
+    "expectedNonWaveCycle": null,
+    "expectedCloudBehavior": "optional advice only; no assignment, delegation, worktree, or spawn",
+    "expectedCardGate": "post-apply Todo/current-cycle re-read"
+  },
+  {
+    "name": "daily activation counts current-cycle Todo toward maximum",
+    "command": "dispatch",
+    "existingActiveCount": 8,
+    "eligibleReadyCount": 5,
+    "expectedActivationSlots": 2,
+    "expectedProjectedActiveCount": 10,
+    "expectedMinimum": 5,
+    "expectedMaximum": 10
+  },
+  {
+    "name": "repeated daily activation at maximum promotes nothing",
+    "command": "dispatch",
+    "existingActiveCount": 10,
+    "eligibleReadyCount": 4,
+    "expectedActivationSlots": 0,
+    "expectedProjectedActiveCount": 10,
+    "expectedBehavior": "do not demote and do not re-promote prior wave"
+  },
+  {
+    "name": "targeted audit derives scope from listed issue hubs",
+    "command": "audit",
+    "input": "V-1.3\n- RES-31\n- RES-32",
+    "expectedProjectName": "V-1.3",
+    "expectedIssueIds": ["RES-31", "RES-32"],
+    "expectedBehavior": "derive owning specs and implementation surfaces only; omitted specs are out of scope"
+  },
+  {
+    "name": "decorated overview URL resolves by exact slug then versionKey",
+    "command": "triage",
+    "input": "https://linear.app/realized/project/restaurant-system-v-02-features-enhancing-4b49445c1129/overview",
+    "expectedProjectSlug": "restaurant-system-v-02-features-enhancing-4b49445c1129",
+    "expectedDisplayName": "restaurant-system V-0.2 (Features Enhancing)",
+    "expectedVersionKey": "V-0.2",
+    "expectedTeamKey": "RES",
+    "expectedIssueIds": []
+  }
+]

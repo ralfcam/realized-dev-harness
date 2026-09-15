@@ -1,0 +1,40 @@
+---
+description: This platform has no production deployment yet — no live users, customers, or production data depend on current behavior. Read before weighing "breaking change" / "regression" / backward-compatibility risk in any plan, audit, triage, or TDD run.
+alwaysApply: true
+---
+
+# Pre-launch status: no production deployment, no live users
+
+**This platform has no production deployment.** There are no live customers,
+no production data, and no existing users depending on current behavior.
+Treat this as ground truth whenever assessing risk for a proposed change.
+
+## What this means for risk assessment
+
+- **"Breaking existing customers" is not a real risk yet.** Don't inflate the
+  risk of a spec-conformance fix, RLS policy change, or default-behavior
+  correction by imagining live orgs/users who depend on the current (possibly
+  wrong) behavior — there are none.
+- **Prefer clean fixes over migration scaffolding.** Feature flags, per-org
+  opt-in toggles, dual code paths, deprecation windows, and backward-compat
+  shims exist to protect *live* users through a transition. Absent live
+  users, default to the simplest correct implementation (one behavior, one
+  code path) unless the toggle is itself a deliberate, requested product
+  feature (e.g. plan-tier differentiation) rather than a safety net.
+- **Resolve spec-vs-code conflicts by picking the correct answer, not by
+  preserving both.** When a spec (or two specs) disagree with the
+  implementation or each other, prefer amending the spec/implementation to
+  match the intended behavior over adding a toggle purely to avoid
+  "regressing" the disputed behavior.
+- **This does not relax test rigor.** Every acceptance criterion still needs
+  real, executed test coverage (see
+  [.cursor/rules/test-execution-integrity.mdc](.cursor/rules/test-execution-integrity.mdc)) — skipping
+  verification because "no one uses this yet" is never acceptable. Only
+  *migration-safety* scaffolding (flags, dual paths, deprecation periods) is
+  what this rule says to skip — not verification, and not security/RLS
+  correctness.
+- **Re-check this rule if the project reaches production.** Once a real
+  deployment with live users exists, this doctrine no longer applies and
+  standard backward-compatibility discipline (see
+  [.cursor/rules/linear-automation.mdc](.cursor/rules/linear-automation.mdc) for the PR/merge lifecycle)
+  resumes. Update or remove this rule at that point.

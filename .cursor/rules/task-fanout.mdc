@@ -1,0 +1,46 @@
+---
+description: Cap Task fan-out so bubble creation cannot saturate — wave at 8 in-flight, never a 60-call burst, never one-at-a-time serialization. Referenced by /capture, /audit, grilling, feedback-validator, and spec-verifier.
+alwaysApply: false
+---
+
+# Task fan-out cap
+
+One number, one rule: **at most 8 `Task` calls in flight, and at most 8 per
+assistant message.**
+
+TASK_FANOUT_INFLIGHT_CAP = 8
+
+That identifier is pinned to
+[`.cursor/hooks/lib/task-fanout-policy.mjs`](.cursor/hooks/lib/task-fanout-policy.mjs).
+Raise it only in the policy constant (this file's number must match —
+harness-lint checks).
+
+## Protocol
+
+1. **Wave, don't dump.** Launch at most 8 `Task` calls per assistant message.
+   Do not put a 60-item (or 77-spec) batch in one message.
+2. **Wait between waves.** Do not start the next wave until the current wave
+   has Agent IDs, and prefer waiting until that wave completes. On
+   `Timeout waiting for bubble creation`, treat those items as **undispatched**
+   — do not retry them in the same turn.
+3. **Serialize ≠ wave.** Forbidding one-at-a-time still holds; forbidding a
+   60-call burst is this rule. Grilling's "never await one validator before
+   dispatching the next" does **not** override this cap — waving is required.
+4. **Fan-out barrier.** Every item still needs a **returned** verdict before
+   `CreatePlan` / synthesis. Waving does not shrink that barrier — it only
+   bounds how many Tasks are in flight at once.
+5. **Timeout / orphan handling.** If the parent times out and a later
+   transcript still arrives, do not double-dispatch that item; the first
+   returned brief wins.
+
+## Who waves
+
+The **parent orchestrator** waves at the cap. Each `feedback-validator` /
+`spec-verifier` still owns exactly one item. `/sdd-to-tdd` stays one Task per
+phase — no behavior change.
+
+## Mechanical backstop
+
+A fail-open `preToolUse` hook (`task-fanout-guard.mjs`, matcher `Task`) denies
+a `Task` call when reservations are at the cap and tells the agent to wave
+and wait for in-flight to drop. A hook crash must not brick TDD `Task` calls.

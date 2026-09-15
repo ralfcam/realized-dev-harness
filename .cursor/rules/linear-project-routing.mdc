@@ -1,0 +1,118 @@
+---
+description: Shared RES team key, versionKey V-X.X discovery, exact command scopes, fail-closed allocation, audit targeting, and command-to-milestone routing.
+alwaysApply: false
+---
+
+# Linear project routing
+
+This is the shared routing contract for `/triage`, `/dispatch`, `/audit`,
+`/tldr`, `/design`, `/sdd-to-tdd`, and `linear-resolver`. Linear identity has
+three layers that must not be collapsed:
+
+1. **Team** — key and issue prefix **`RES`**, issue IDs **`RES-###`**. The
+   live team display name (`Restaurant Link`, `Realized`, or another label)
+   is informational and must not fail the scope when the project’s owning team key/UUID is RES.
+2. **Project record** — the exact Linear project, identified by its live
+   record and `/project/<slug>/...` path identity. Never infer identity from the human-readable slug itself.
+3. **`versionKey`** — a derived canonical `V-X.X` extracted from the
+   project’s display name. A RES project with canonical version key `V-X.X`
+   is in the version-project set even when that name is decorated.
+
+Linear project identity is dynamic; never default to a repository, Vercel
+project, legacy project URL, or `/projects/all`.
+
+## Discover the version-project set
+
+1. Resolve the team once and require key `RES` (the resolved team UUID is
+   also sufficient). Do not require the live display name to equal Realized
+   or Restaurant Link.
+2. Call `list_projects` for that team and paginate until exhausted.
+3. From each project’s display name, extract exactly one case-insensitive
+   standalone `V-<major>.<minor>` token and canonicalize it to `versionKey`
+   `V-X.X`. Reject a project with no token or with multiple distinct tokens.
+   Reject the whole discovery set when two nonterminal RES candidates share
+   the same canonical key.
+4. Exclude terminal projects. Classify every remaining version project as
+   **ongoing** or **available** from its live Linear project status; never infer
+   either class from the name, repository, or a hardcoded list.
+5. A failed page, unresolved status, missing/malformed `versionKey`,
+   duplicate canonical keys, or unresolved tie is `cannot verify`. Fail closed:
+   do not schedule, move, mutate, emit a dispatch card, or publish
+   an audit update for the affected item.
+
+## Normalize optional command scopes
+
+The PM commands share one grammar:
+
+- no argument: use the live nonterminal RES set of projects with canonical
+  version key `V-X.X`;
+- one project URL or name: pin that exact version project (URL by slug
+  first; a supplied `V-X.X` or decorated display name pins by unique
+  `versionKey` / exact record);
+- issue IDs, issue URLs, or a multiline Markdown issue list: de-duplicate into
+  an exact ordered inclusion set;
+- project plus issue list: pin the project as the target boundary and use the
+  issue list as the complete candidate set.
+
+For project URLs, canonicalize only the `/project/<slug>/...` path identity;
+ignore `/overview`, other layout suffixes, and query parameters. Resolve
+the slug against live projects first, then derive `versionKey` from the
+resolved project’s display name. Never infer identity from the human-readable
+slug itself. Resolve a supplied exact display name against live projects and
+reject terminal, non-RES, or non-`versionKey` projects. Resolve every supplied
+issue with `get_issue`. Report malformed, unresolved, or non-RES entries and
+exclude them; never broaden the scope to compensate.
+
+An explicit issue list is a hard inclusion boundary, not approval or forced
+selection. Reads needed for team/project validation, milestones, cycle,
+relations, specs, de-duplication, and ranking remain allowed. No unlisted issue
+may be scheduled, mutated, or audited. Supplied order is only the last
+tie-break after dependencies and risk.
+
+With combined scope, preserve an issue already in the pinned project. Otherwise
+show the proposed move in the approval plan. A project-incompatible issue is
+deferred through `CLARIFY`, never silently reassigned.
+
+## Allocate an issue
+
+Use the first unambiguous compatible signal:
+
+1. explicit valid pinned project;
+2. the issue's existing nonterminal RES version project;
+3. the project of its parent or issue that blocks it;
+4. scope evidence in project descriptions/labels plus milestone compatibility;
+5. for Urgent/Blocker work, the uniquely compatible ongoing project;
+6. the earliest compatible available version (semantic version, then target
+   date when needed).
+
+Every selected project must come from this run's discovered set. Conflicting
+signals or a tie posts/updates the stable clarification for a tracked issue and
+leaves current workflow state unchanged (excluded from scheduling/dispatch);
+an untracked ledger item stays unscheduled with the same question in the local
+plan.
+
+## Select one audit project
+
+Use an explicit valid project first. Otherwise choose the uniquely best
+**ongoing** project by audited scope match, then earliest target date, then
+current semantic version ordering. If no ongoing project exists or a tie
+remains, fail closed and skip the project-health update without changing the
+repo-derived audit verdict.
+
+## Command-to-milestone route
+
+Use only an existing milestone in the selected project's M1–M9 set:
+
+- `/design` is pre-implementation only: M1 for genuine project/bootstrap
+  definition, M2 for requirements/spec definition, M3 for architecture,
+  schema, or UX decisions.
+- `/sdd-to-tdd` contract clarification/correction of an existing spec may
+  remain M2; FEATURE/FIX implementation is M4. Test/audit, beta or real-user
+  validation, UAT/RC, launch-critical/security/money, and maintenance work map
+  to M5, M6, M7, M8, and M9 respectively.
+- Do not impose a blanket M4+ rule on `/sdd-to-tdd`; validate the work type.
+- Mixed unresolved design and implementation becomes two linked issues: the
+  M1–M3 decision/design issue blocks the later implementation issue. Dispatch
+  must not schedule implementation until the governing spec is testable.
+
+`docs/findings/README.md` owns the complete milestone names and signal map.

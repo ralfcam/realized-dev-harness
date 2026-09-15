@@ -1,0 +1,20 @@
+---
+description: After shipping implementation changes, delegate docs-updater to sync docs/
+globs: app/**,supabase/**,tests/**,lib/**,components/**
+alwaysApply: false
+---
+
+# Docs sync after implementation
+
+When you change behavior, schema, server actions, reservations, menu, scheduling, tests, runbooks, or env/config under the scoped paths:
+
+1. **Before marking the task done**, delegate to the **docs-updater** subagent (background) for `HEAD`, or the commit range you just created.
+2. **Skip** delegation when the change set is docs-only (`docs/`, `CONTRIBUTING.md`, `.cursor/plans/`) or has no user-facing impact (formatting, comments only).
+3. **Do not commit** doc edits yourself unless the user asked — docs-updater leaves `docs/` dirty for human review.
+
+Hooks may also remind you:
+
+- **postToolUse** after `git commit` injects context to run docs-updater.
+- **stop** auto-submits a follow-up once per conversation if implementation paths changed.
+
+If a hook already triggered docs-updater this session, do not spawn a duplicate unless the user requests a re-sync.
