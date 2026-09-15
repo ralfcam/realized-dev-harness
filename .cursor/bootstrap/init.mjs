@@ -240,8 +240,12 @@ function preflight(
 }
 
 function writeGeneratedFiles(app, projectName, manifest) {
+  // Release-state checks apply only to the uninitialized harness distribution.
+  rmSync(join(app, ".cursor", "checks", "release-state.mjs"), { force: true })
+  rmSync(join(app, ".cursor", "checks", "release-state.test.mjs"), { force: true })
   const packagePath = join(app, "package.json")
   const pkg = JSON.parse(readFileSync(packagePath, "utf8"))
+  if (pkg.scripts) delete pkg.scripts["harness:release-check"]
   pkg.name = projectName
   pkg.type = "module"
   pkg.packageManager = `pnpm@${manifest.pnpmVersion}`
@@ -497,6 +501,8 @@ export async function initialize(options, root = process.cwd(), dependencies = {
     await persist("merged")
   }
   if (phaseIndex(state.phase) >= phaseIndex("merged")) {
+    rmSync(join(root, ".cursor", "checks", "release-state.mjs"), { force: true })
+    rmSync(join(root, ".cursor", "checks", "release-state.test.mjs"), { force: true })
     rmSync(workRoot, { recursive: true, force: true })
   }
 

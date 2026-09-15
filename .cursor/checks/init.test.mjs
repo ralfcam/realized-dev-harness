@@ -189,6 +189,10 @@ test("all integration profile combinations produce only selected artifacts", asy
         Boolean(JSON.parse(readFileSync(join(root, ".cursor", "settings.json"))).plugins.linear),
         withLinear,
       )
+      const generatedPackage = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))
+      assert.equal(generatedPackage.scripts["harness:release-check"], undefined)
+      assert.equal(existsSync(join(root, ".cursor", "checks", "release-state.mjs")), false)
+      assert.equal(existsSync(join(root, ".cursor", "checks", "release-state.test.mjs")), false)
     }
   }
 })

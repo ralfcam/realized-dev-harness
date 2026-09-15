@@ -15,6 +15,12 @@ The bootstrap manifest pins the template, generator, test tools, Node minimum,
 and pnpm version. Initialization checkpoints resume by phase. Use
 `/upgrade-harness` for dry-run-first, collision-safe harness migrations.
 
+The harness must ship in its pre-`/init` state. Before releasing it, run
+`pnpm harness:release-check`; the check refuses initialized configuration,
+local verification evidence, runtime state, credentials, and scaffolded
+application files. `/init` removes this distribution-only check from the
+generated project.
+
 ## Lifecycle
 
 `/capture` → `/triage` → `/dispatch` → `/design` →

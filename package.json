@@ -7,6 +7,7 @@
   "scripts": {
     "test:harness": "node --test .cursor/checks/*.test.mjs",
     "harness:lint": "node .cursor/checks/harness-lint.mjs",
+    "harness:release-check": "node .cursor/checks/release-state.mjs",
     "harness:doctor": "node .cursor/bootstrap/doctor.mjs",
     "verify:local": "node .cursor/bootstrap/verify-local.mjs",
     "work-item": "node .cursor/bootstrap/work-items.mjs",
