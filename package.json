@@ -1,0 +1,18 @@
+{
+  "name": "realized-dev-harness",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "test:harness": "node --test .cursor/checks/*.test.mjs",
+    "harness:lint": "node .cursor/checks/harness-lint.mjs",
+    "harness:doctor": "node .cursor/bootstrap/doctor.mjs",
+    "verify:local": "node .cursor/bootstrap/verify-local.mjs",
+    "work-item": "node .cursor/bootstrap/work-items.mjs",
+    "harness:upgrade": "node .cursor/bootstrap/upgrade.mjs"
+  },
+  "devDependencies": {
+    "yaml": "2.9.1"
+  }
+}

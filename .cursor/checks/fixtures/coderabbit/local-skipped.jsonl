@@ -1,3 +1,0 @@
-{"type":"review_context","base":"staging","reviewedFiles":["lib/example.ts"]}
-{"type":"status","status":"review_skipped","message":"No changes detected"}
-{"type":"complete","status":"review_skipped","findings":0,"message":"No changes detected","reviewedFiles":["lib/example.ts"]}

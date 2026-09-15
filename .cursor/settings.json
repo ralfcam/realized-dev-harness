@@ -1,10 +1,3 @@
 {
-  "plugins": {
-    "linear": {
-      "enabled": true
-    },
-    "vercel": {
-      "enabled": true
-    }
-  }
+  "plugins": {}
 }
