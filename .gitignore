@@ -1,0 +1,15 @@
+node_modules/
+.next/
+playwright-report/
+test-results/
+coverage/
+.env*
+!.env.example
+.vercel/
+.cursor/hooks/state/
+.cursor/bootstrap-state.json
+.cursor/bootstrap-work/
+.cursor/upgrade-state.json
+.cursor/plans/*.plan.md
+supabase/.branches/
+supabase/.temp/

@@ -1,0 +1,51 @@
+name: Bootstrap smoke
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scaffold-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:harness
+      - name: Scaffold without local infrastructure
+        run: node .cursor/bootstrap/init.mjs --project-name matrix-bootstrap --skip-supabase-start
+      - run: pnpm build
+      - run: pnpm test:e2e
+
+  full-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:harness
+      - name: Bootstrap and verify with local Supabase
+        run: node .cursor/bootstrap/init.mjs --project-name ci-bootstrap-smoke
+      - name: Require recorded local verification evidence
+        run: pnpm harness:doctor

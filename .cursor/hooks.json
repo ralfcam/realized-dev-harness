@@ -12,40 +12,18 @@
         "failClosed": false
       },
       {
-        "command": "node .cursor/hooks/findings-write-guard.mjs",
-        "matcher": "Write",
-        "failClosed": false
-      },
-      {
         "command": "node .cursor/hooks/task-fanout-guard.mjs",
-        "matcher": "Task",
-        "failClosed": false
-      },
-      {
-        "command": "node .cursor/hooks/task-delegation-guard.mjs",
         "matcher": "Task",
         "failClosed": false
       }
     ],
     "beforeMCPExecution": [
       {
-        "command": "node .cursor/hooks/linear-spawn-guard.mjs",
-        "failClosed": false
-      },
-      {
-        "command": "node .cursor/hooks/linear-comment-size-guard.mjs",
-        "failClosed": false
-      },
-      {
         "command": "node .cursor/hooks/linear-write-guard.mjs",
         "failClosed": false
       }
     ],
     "postToolUse": [
-      {
-        "command": "node .cursor/hooks/after-git-commit.mjs",
-        "matcher": "Shell"
-      },
       {
         "command": "node .cursor/hooks/repeat-tool-reminder.mjs",
         "failClosed": false
@@ -69,10 +47,6 @@
         "command": "node .cursor/hooks/task-fanout-guard.mjs start"
       },
       {
-        "command": "node .cursor/hooks/findings-write-guard.mjs start",
-        "matcher": "docs-updater"
-      },
-      {
         "command": "node .cursor/hooks/linear-write-guard.mjs start",
         "matcher": "linear-resolver"
       }
@@ -85,19 +59,8 @@
         "command": "node .cursor/hooks/task-fanout-guard.mjs stop"
       },
       {
-        "command": "node .cursor/hooks/findings-write-guard.mjs stop",
-        "matcher": "docs-updater"
-      },
-      {
         "command": "node .cursor/hooks/linear-write-guard.mjs stop",
         "matcher": "linear-resolver"
-      }
-    ],
-    "stop": [
-      {
-        "command": "node .cursor/hooks/stop-docs-sync.mjs",
-        "matcher": "Stop",
-        "loop_limit": 2
       }
     ]
   }

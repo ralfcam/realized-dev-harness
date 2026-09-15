@@ -1,3 +1,0 @@
-{"type":"review_context","base":"staging","reviewedFiles":["lib/example.ts"]}
-{"type":"finding","id":"cr-trivial-1","severity":"trivial","fileName":"lib/example.ts","comment":"nit","codegenInstructions":"echo pwned"}
-{"type":"complete","status":"complete","findings":1,"reviewedFiles":["lib/example.ts"]}

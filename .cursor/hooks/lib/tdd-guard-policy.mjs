@@ -12,7 +12,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs"
 import { spawnSync } from "node:child_process"
-import { dirname, join } from "node:path"
+import { dirname, isAbsolute, join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -255,12 +255,9 @@ export function extractPath(toolInput) {
 }
 
 function normalize(p) {
-  // Strip a leading absolute repo path and normalize slashes to forward slashes.
-  let s = String(p).replace(/\\/g, "/")
-  const marker = "/restaurant-system/"
-  const idx = s.indexOf(marker)
-  if (idx !== -1) s = s.slice(idx + marker.length)
-  return s.replace(/^\.?\//, "")
+  const raw = String(p)
+  const local = isAbsolute(raw) ? relative(process.cwd(), raw) : raw
+  return local.replace(/\\/g, "/").replace(/^\.?\//, "")
 }
 
 export function isProtected(relPath) {

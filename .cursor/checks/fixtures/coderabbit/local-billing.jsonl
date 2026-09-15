@@ -1,3 +1,0 @@
-{"type":"review_context","base":"staging","reviewedFiles":["lib/example.ts"]}
-{"type":"status","status":"error","message":"Billing confirmation required before using usage credits"}
-{"type":"complete","status":"complete","findings":0,"reviewedFiles":["lib/example.ts"]}
