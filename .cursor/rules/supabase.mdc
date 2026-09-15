@@ -1,0 +1,12 @@
+---
+description: Local-first Supabase migrations and integration safety
+globs: supabase/**,tests/integration/**
+alwaysApply: false
+---
+
+# Supabase
+
+Schema is represented only by ordered migrations and reproducible seed files.
+Never test mutations against a remote URL. Before database tests or reset,
+require the configured Supabase URL host to be `127.0.0.1`, `localhost`, or
+`::1`. Run `supabase db lint --local --fail-on error` for schema changes.

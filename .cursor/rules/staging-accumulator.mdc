@@ -1,0 +1,11 @@
+---
+description: Configuration-driven accumulator branch workflow
+alwaysApply: false
+---
+
+# Staging accumulator
+
+Read branch names from `.cursor/harness.json`. Feature branches target the
+accumulator. Only the accumulator targets the default branch for promotion.
+Cloud branches are identified by `cursor/`. Agents may prepare and push
+branches and pull requests but never merge them.

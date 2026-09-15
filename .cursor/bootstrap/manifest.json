@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "harnessVersion": "0.2.0",
+  "nodeMinimum": "20.9.0",
+  "pnpmVersion": "10.34.5",
+  "template": {
+    "package": "create-next-app",
+    "version": "16.3.5",
+    "repository": "https://github.com/vercel/next.js",
+    "ref": "v16.3.5",
+    "example": "examples/with-supabase"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "26.6.0",
+    "jsdom": "30.0.1",
+    "supabase": "2.117.0",
+    "vitest": "5.0.1",
+    "yaml": "2.9.1"
+  }
+}

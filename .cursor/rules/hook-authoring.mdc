@@ -1,0 +1,12 @@
+---
+description: Runtime guards must remain deterministic and fail safely
+globs: .cursor/hooks/**
+alwaysApply: false
+---
+
+# Hook authoring
+
+Hooks parse Cursor JSON from standard input, keep runtime state beneath the
+ignored `.cursor/hooks/state/` directory, and never depend on credentials.
+Safety guards fail closed only for deterministic destructive actions; advisory
+reminders fail open.

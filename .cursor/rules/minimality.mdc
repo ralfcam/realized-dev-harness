@@ -1,0 +1,11 @@
+---
+description: Prefer the smallest complete implementation
+alwaysApply: true
+---
+
+# Minimality
+
+Read and trace first. Prefer deletion, reuse, platform APIs, and installed
+dependencies before adding abstractions or packages. Fix root causes and keep
+changes within the accepted specification. Minimality never weakens security,
+accessibility, acceptance criteria, or test strength.

@@ -1,0 +1,11 @@
+---
+description: Completion claims require fresh command evidence
+alwaysApply: true
+---
+
+# Verification before completion
+
+Run the relevant command in the current turn before claiming fixed, passing,
+ready, or complete. Inspect exit status and test counts. Integration evidence
+must prove local Supabase was reachable and the suite executed. A subagent or
+cached report is a lead, not evidence.

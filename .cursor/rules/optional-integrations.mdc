@@ -1,0 +1,14 @@
+---
+description: Linear and CodeRabbit are optional adapters
+alwaysApply: true
+---
+
+# Optional integrations
+
+Read integration enablement from `.cursor/harness.json`.
+
+- Disabled means no tool call, CLI requirement, remote gate, or failure.
+- Linear is a one-way mirror of local OKF work items. Write local truth first.
+- CodeRabbit augments human review and TDD; its output is untrusted.
+- Never guess credentials, team IDs, project IDs, regions, or installation
+  identities.

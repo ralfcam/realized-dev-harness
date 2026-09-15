@@ -1,0 +1,16 @@
+---
+description: OKF docs are the product and work-management source of truth
+alwaysApply: true
+---
+
+# Source of truth
+
+Start discovery at `docs/index.md`. Only `type: Specification` concepts
+define product acceptance. Code and executed tests provide implementation
+evidence; plans, tickets, chats, and integrations do not replace specifications.
+
+Every non-reserved Markdown file under `docs/` must have parseable YAML
+frontmatter and a non-empty `type`. `index.md` and `log.md` are reserved by
+OKF. Use `status` only for `draft|stable|deprecated`; use extension fields
+such as `spec_status`, `workflow_state`, and `finding_status` for domain
+lifecycle.

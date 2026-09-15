@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "harnessVersion": "0.2.0",
+  "initialized": false,
+  "project": {
+    "name": null
+  },
+  "template": {
+    "repository": "https://github.com/vercel/next.js",
+    "ref": "v16.3.5",
+    "example": "examples/with-supabase",
+    "generator": "create-next-app@16.3.5"
+  },
+  "runtime": {
+    "nodeMinimum": "20.9.0",
+    "pnpmVersion": "10.34.5"
+  },
+  "packageManager": "pnpm",
+  "commands": {
+    "lint": "pnpm lint",
+    "typecheck": "pnpm typecheck",
+    "unit": "pnpm test:unit",
+    "integration": "pnpm test:integration",
+    "e2e": "pnpm test:e2e",
+    "build": "pnpm build",
+    "harness": "pnpm test:harness"
+  },
+  "git": {
+    "defaultBranch": "main",
+    "accumulatorBranch": "staging",
+    "featurePrefix": "sdd/"
+  },
+  "docs": {
+    "root": "docs",
+    "okfVersion": "0.2"
+  },
+  "dispatch": {
+    "minimumActive": 1,
+    "maximumActive": 3
+  },
+  "integrations": {
+    "linear": {
+      "enabled": false
+    },
+    "coderabbit": {
+      "enabled": false
+    }
+  }
+}

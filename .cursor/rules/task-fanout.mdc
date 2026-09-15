@@ -1,0 +1,10 @@
+---
+description: Bound concurrent Cursor Task fan-out
+alwaysApply: false
+---
+
+# Task fan-out
+
+`TASK_FANOUT_INFLIGHT_CAP = 8`. Wave independent tasks up to that cap and
+collect results before another wave. Do not serialize naturally independent
+audits and do not burst beyond the cap.

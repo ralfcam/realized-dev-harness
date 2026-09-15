@@ -1,0 +1,13 @@
+---
+description: Synchronize OKF concepts after implementation changes
+globs: app/**,src/**,lib/**,components/**,supabase/**,tests/**
+alwaysApply: false
+---
+
+# Documentation synchronization
+
+Before completing a behavior, schema, route, environment, or test change,
+delegate the affected diff to `docs-updater`. Update only verified claims,
+frontmatter provenance, indexes, and `docs/log.md`. Skip documentation-only
+and formatting-only changes. Never rewrite specification acceptance merely to
+match an implementation.

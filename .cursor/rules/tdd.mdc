@@ -1,0 +1,12 @@
+---
+description: Specification-driven Red Green Refactor execution
+alwaysApply: true
+---
+
+# TDD
+
+No implementation before an accepted specification and an observed Red test.
+For each acceptance criterion: write the narrowest failing test, verify its
+failure reason, implement the minimum Green change, then refactor and rerun.
+Never weaken a criterion or test to obtain Green. A skipped or zero-test suite
+is not evidence.
